@@ -116,9 +116,62 @@
 
 \section{Methodology of BBSched}
 
-\begin{frame}{}
-    
+\begin{frame}{Window-based Scheduling}
+    The idea of window-based scheduling as shown in Fig \ref{fig:BBsched} is that the first $w$ jobs in the job waiting queue get copied into the window.   \\
+
+    This allows our BBsched to consider the site policies and keep the order of the base scheduler as similar as possible.
+    \begin{figure}[htpb]
+        \begin{center}
+            \includegraphics[keepaspectratio, scale=0.2]{pic/BBSched.jpg}
+            \caption{The overview of BBsched.}
+            \label{fig:BBsched}
+        \end{center}
+     \end{figure}
 \end{frame}
 
+\begin{frame}{MOO Solver}
 
+    Suppose a system has $N$ nodes and burst buffers of total $B$ GB. 
+    The amounts of nodes and burst buffers being used are $N_{used}$ and $B_{used}$ respectively.
+    Suppose $J = \{J_1 , . . . , J_w \} $is a set of $w$ jobs in the scheduling window. 
+    Job $J_i$ requiring $n_i$ nodes and $b_i $GB of burst buffers. \\
+    \vspace{10pt}
+    The scheduling problem can be transformed into the following MOO: 
+    to determine a finite set of Pareto solutions $X$; 
+    each Pareto solution $x \in X$ is represented by a binary vector $x = [x_1 , . . . ,x_w ]$, 
+    such that $x_i = 1$ if $J_i$ is selected to execute and $x_i = 0$ otherwise. \\
+    \vspace{10pt}
+    Pareto solution optimizes the following two objectives: \\
+    (1) maximize node utilization:  $f_{1}(\boldsymbol{x})=\sum_{i=1}^{w} n_{i} \times x_{w}$ \\
+    (2) maximize burst buffer utilization:  $f_{2}(\boldsymbol{x})=\sum_{i=1}^{w} b_{i} \times x_{i}$ \\  
+    Formally, the problem can be formulated as:
+    $$
+    \begin{array}{ll}
+    \max & \left(f_{1}(\boldsymbol{x}), f_{2}(\boldsymbol{x})\right) \\
+    \text { s.t. } & \sum_{i=1}^{w} n_{i} \times x_{i} \leq N-N_{\text {used }}, \quad x_{i} \in\{0,1\} \\
+    & \sum_{i=1}^{w} b_{i} \times x_{i} \leq B-B_{\text {used }}, \quad x_{i} \in\{0,1\}
+    \end{array}
+    $$
+
+\end{frame}
+
+\begin{frame}{MOO Solver}
+    Because this MOO problem is NP-hard, this paper uses a genetic algorithm to approximate the Pareto set (optimal solutions). \\
+    \begin{figure}
+        \begin{center}
+            \includegraphics[keepaspectratio, scale=0.18]{pic/genetic.png}
+            \caption{MOO solver maintains a population of candidate solutions (4 chromosomes). 
+            A chromosome consists of 5 genes, where each gene represents the selection of the job at a specific location in the window and encodes as a binary number: 1 (selected) or 0 (not selected).}
+            \label{fig:Genetic_Algorithm}
+        \end{center}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Decision making}
+    The output of the solver is a Pareto set, and a decision maker needs to select one preferred solution. \\
+    \vspace{10pt}
+    Different HPC facilities may have different site policies and scheduling priorities. \\
+    \vspace{10pt}
+    System managers may use a site-specific metric for selecting a preferred solution out of the Pareto set. 
+\end{frame}
 \end{document}
