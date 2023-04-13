@@ -8,7 +8,7 @@
 \usepackage{ragged2e}
 \usepackage[backend=bibtex,sorting=none]{biblatex} % biblatex
 \setbeamerfont{footnote}{size=\tiny}
-\addbibresource{ref.bib}
+% \addbibresource{ref.bib}
 
 \usepackage{lipsum}
 
@@ -173,5 +173,169 @@
     Different HPC facilities may have different site policies and scheduling priorities. \\
     \vspace{10pt}
     System managers may use a site-specific metric for selecting a preferred solution out of the Pareto set. 
+\end{frame}
+
+\section{Evaluation}
+
+\begin{frame}{Workloads}
+    Simulation using real workload traces collected from production systems.
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.4]{pic/workload.png}
+        \caption{Overview of Cori and Theta workloads}
+        \label{fig:workload}
+    \end{figure}
+    \begin{itemize}
+    \item Theta is currently not deployed with any shared burst buffer (set the more than 1GB of transferred data as the corresponding job’s burst buffer request)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Workload Settings}
+\begin{table}[]
+\begin{tabular}{|c|c|c|}
+\hline
+Workload & percentage of jobs requesting BB & assigned burst buffer request \\ \hline
+S1       & $50\%$                           & $\geq 5$TB                    \\ \hline
+S2       & $75\%$                           & $\geq 20$TB                   \\ \hline
+S3       & $50\%$                           & $\geq 5$TB                    \\ \hline
+S4       & $75\%$                           & $\geq 20$TB                   \\ \hline
+\end{tabular}
+\end{table}
+\begin{itemize}
+    \item One issue with both traces is that original burst buffers are not heavily used, and expecting significant increases in requests for burst buffers.
+    \item the assigned burst buffer request is randomly selected from the original burst buffer requests.
+    
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Workload Settings}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.47]{pic/workload_reset.png}
+    \caption{S3 and S4 workloads have larger burst buffer requests than S1 and S2. S1 and S2 have similar distributions, but more jobs in S2 request burst
+    buffers}
+    \label{fig:my_label}
+\end{figure}    
+\end{frame}
+
+\begin{frame}{Metrics}
+The first two metrics are system-level performance metrics, whereas the last two are user-level performance metrics
+\begin{enumerate}
+    \item Node usage: running time/allocate time
+    \item Burst buffer usage: using time/allocate time
+    \item Job wait time: interval between job submission to job start time
+    \item Job slowdown: (job runtime + wait time)/actual runtime
+\end{enumerate}
+Eight multi-resource scheduling methods:
+\begin{enumerate}
+    \item Baseline
+    \item Weighted: weights of node 50\% - weight of BB 50\%
+    \item Weighted\_CPU: weights of node 80\% - weight of BB 20\%
+    \item Weighted\_BB:  weights of node 20\% - weight of BB 80\%
+    \item Constrained\_CPU: maximize node utilization
+    \item Constrained\_BB:maximize burst buffer utilization 
+    \item Bin\_Packing:
+    \item BBSched: window size to 20, the number of generation to 500, the population size to 20, and the mutation probability to 0.05\%
+\end{enumerate}
+\end{frame}
+
+\section{Result}
+
+\begin{frame}{Overview of Result}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.247]{pic/overall_performence.png}
+        \caption{Kiviat graphs: Cori traces (top) and Theta traces (bottom).The
+            larger the area is, the better the overall performance is.}
+        \label{fig:my_label}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Nodes and Buffer Usage}
+    \begin{figure} \centering
+        \subfigure { \label{fig:a}
+        \includegraphics[width=0.47\columnwidth]{pic/node_usage.png}
+        }
+        \subfigure{ \label{fig:b}
+        \includegraphics[width=0.47\columnwidth]{pic/buffer_usage.png}
+        }
+    \label{fig}
+    \end{figure}
+    \begin{itemize}
+        \item  Node usage and BB usage are almost negatively correlated.
+        \item Where's the sweet point?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Wait Time}
+    \begin{figure} \centering
+        \subfigure { \label{fig:a}
+        \includegraphics[width=0.47\columnwidth]{pic/wait_time.png}
+        }
+        \subfigure{ \label{fig:b}
+        \includegraphics[width=0.47\columnwidth]{pic/wait_analy.png}
+        }
+    \label{fig}
+    \end{figure}
+    \begin{itemize}
+        \item BBSched achieves the most significant reductions on average job
+            wait time, the most significant gain comes from small jobs.
+        \item all optimization methods reduce average wait time of long jobs, but increase the average wait time of short jobs. 
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Sensitivity Analysis}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{pic/sensititity.png}
+    \caption{ BBSched performance under different window sizes. There are two numbers per cell: the top is for Cori-S4 and the bottom is for Theta-S4}
+\end{figure}
+Window sizes between 10 to 30 have no significant effect. But a range of 10 to 20 is best.
+\end{frame}
+
+
+\section{Incorporate More Resources}
+
+\begin{frame}{Incorporate Additional Resources}
+ Present a case study to illustrate that BBSched can be easily extended to incorporate additional schedulable resources. Add two additional objectives
+ \begin{itemize}
+     \item  maximize local SSD utilization
+     \item  minimize wasted local SSD
+ \end{itemize}
+For hardware configuration, assume 50\% of nodes in the system are equipped with 128 GB local SSDs, the rest of the nodes are equipped with 256 GB local SSDs.
+
+Generate three workloads (S5-S7) based on Cori-S2 and Theta-S2 by
+creating job’s local SSD requests
+
+\begin{table}[]
+\begin{tabular}{|c|c|c|}
+\hline
+Workload & 0-128G SSD request & 129-256G SSD request \\ \hline
+S5       & $80\%$             & $20\%$               \\ \hline
+S6       & $50\%$             & $50\%$               \\ \hline
+S7       & $20\%$             & $80\%$               \\ \hline
+\end{tabular}
+\end{table}
+ Weighted method aims to maximize the equally weighted sum of node, burst buffer, local SSD utilization, and negative percentage of wasted SSD. Constrained\_SSD method aims to maximize local SSD utilization under
+the constraints of the other resources.
+\end{frame}
+
+\begin{frame}{More Complex Optimization Problems}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3]{pic/more_concern.png}
+        \caption{BBSched achieves the best overall performance on all workloads}
+    \end{figure}
+\end{frame}
+
+\section{Conclusion}
+
+\begin{frame}{Conclusion}
+    \begin{itemize}
+        \item Multi-resource scheduling problem can be formulated into a MOO problem and is rapidly solved by a multi-objective genetic algorithm.
+        \item  The extensive trace-based simulations demonstrate BBSched outperforms the existing methods in terms of both system-level and user-level metrics(41\% over naive method, 33\% over bin packing method, 35\% over constrained methods, and 20\% over weighted methods). 
+        \item  Can be extended to incorporate other resources.
+        \item Needs test on real systems.
+    \end{itemize}
 \end{frame}
 \end{document}
