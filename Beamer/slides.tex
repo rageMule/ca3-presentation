@@ -117,15 +117,14 @@
 \section{Methodology of BBSched}
 
 \begin{frame}{Window-based Scheduling}
-    The idea of window-based scheduling as shown in Fig \ref{fig:BBsched} is that the first $w$ jobs in the job waiting queue get copied into the window.   \\
+    The idea of window-based scheduling as shown is that the first $w$ jobs in the job waiting queue get copied into the window.   \\
 
-    This allows our BBsched to consider the site policies and keep the order of the base scheduler as similar as possible.
+    This allows our BBsched to consider the site policies and keep the order of the base scheduler as similar as possible. \\
     \begin{figure}[htpb]
-        \begin{center}
-            \includegraphics[keepaspectratio, scale=0.2]{pic/BBSched.jpg}
-            \caption{The overview of BBsched.}
-            \label{fig:BBsched}
-        \end{center}
+        \centering
+        \includegraphics[keepaspectratio, scale=0.2]{pic/BBSched.jpg}
+        \caption{The overview of BBsched.}
+        \label{fig:BBsched}
      \end{figure}
 \end{frame}
 
