@@ -210,7 +210,7 @@ S4       & $75\%$                           & $\geq 20$TB                   \\ \
 \begin{frame}{Workload Settings}
 \begin{figure}
     \centering
-    \includegraphics[scale=0.47]{pic/workload_reset.png}
+    \includegraphics[scale=0.40]{pic/workload_reset.png}
     \caption{S3 and S4 workloads have larger burst buffer requests than S1 and S2. S1 and S2 have similar distributions, but more jobs in S2 request burst
     buffers}
     \label{fig:my_label}
@@ -225,7 +225,10 @@ The first two metrics are system-level performance metrics, whereas the last two
     \item Job wait time: interval between job submission to job start time
     \item Job slowdown: (job runtime + wait time)/actual runtime
 \end{enumerate}
-Eight multi-resource scheduling methods:
+\end{frame}
+
+\begin{frame}{Methods}
+    Eight multi-resource scheduling methods:
 \begin{enumerate}
     \item Baseline
     \item Weighted: weights of node 50\% - weight of BB 50\%
@@ -233,7 +236,7 @@ Eight multi-resource scheduling methods:
     \item Weighted\_BB:  weights of node 20\% - weight of BB 80\%
     \item Constrained\_CPU: maximize node utilization
     \item Constrained\_BB:maximize burst buffer utilization 
-    \item Bin\_Packing:
+    \item Bin\_Packing:compute a dot product between the vector of available and requested resources for jobs, then allocate jobs with highest alignment score recursively
     \item BBSched: window size to 20, the number of generation to 500, the population size to 20, and the mutation probability to 0.05\%
 \end{enumerate}
 \end{frame}
