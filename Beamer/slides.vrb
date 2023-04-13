@@ -1,0 +1,30 @@
+\begin{columns}
+        \column{.6\textwidth}
+\begin{lstlisting}[language=TeX]
+\begin{table}[htbp]
+  \caption{numbers & meaning}
+  \label{tab:number}
+  \centering
+  \begin{tabular}{cl}
+    \toprule
+    number & meaning \\
+    \midrule
+    1 & 4.0 \\
+    2 & 3.7 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\end{lstlisting}
+        \column{.4\textwidth}
+        \begin{table}[htpb]
+            \centering
+            \caption{numbers \& meaning}
+            \label{tab:number}
+            \begin{tabular}{cl}\toprule
+                numbers & meaning \\\midrule
+                1 & 4.0\\
+                2 & 3.7\\\bottomrule
+            \end{tabular}
+        \end{table}
+        \normalsize formula~(\ref{eq:vsphere}) at previous slide and Table~\ref{tab:number}。
+    \end{columns}
